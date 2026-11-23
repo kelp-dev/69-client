@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "69-client",
+	"id": "sixtynine-client",
 	"version": "${version}",
 	"name": "69-client",
 	"description": "This is an example description! Tell everyone what your mod is about!",
