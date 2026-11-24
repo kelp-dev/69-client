@@ -8,6 +8,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -146,11 +147,12 @@ public class SixNineClientClient implements ClientModInitializer {
 		MODULES.add(new Module("Block List", Category.CLIENT, false));
 		MODULES.add(new Module("Notifications", Category.CLIENT, true));
 
+		// Taste adaptate la Minecraft 1.21.11
 		menuKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.sixtynine.clickgui", GLFW.GLFW_KEY_RIGHT_SHIFT, "category.sixtynine"
+				"key.sixtynine.clickgui", GLFW.GLFW_KEY_RIGHT_SHIFT, KeyMapping.Category.MISC
 		));
 		zoomKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.sixtynine.zoom", GLFW.GLFW_KEY_C, "category.sixtynine"
+				"key.sixtynine.zoom", GLFW.GLFW_KEY_C, KeyMapping.Category.MISC
 		));
 
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
@@ -281,52 +283,3 @@ public class SixNineClientClient implements ClientModInitializer {
 				int px = startX + col * (panelW + gap);
 				int py = row == 0 ? startY : startY + 195;
 
-				g.fill(px, py, px + panelW, py + 15, accent);
-				g.drawCenteredString(this.font, cat.name, px + panelW / 2, py + 4, 0xFFFFFFFF);
-								int my = py + 15;
-				for (Module m : MODULES) {
-					if (m.category == cat) {
-						boolean hov = mouseX >= px && mouseX <= px + panelW && mouseY >= my && mouseY <= my + 13;
-						int bg = m.enabled ? ((accent & 0x00FFFFFF) | 0xBB000000) : (hov ? 0xCC2C3E50 : 0xCC181818);
-						g.fill(px, my, px + panelW, my + 13, bg);
-						g.drawString(this.font, m.name, px + 4, my + 3, m.enabled ? 0xFFFFFFFF : 0xFFBBBBBB, true);
-						my += 13;
-					}
-				}
-			}
-			super.render(g, mouseX, mouseY, delta);
-		}
-
-		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (button == 0) {
-				int cols = 4;
-				int panelW = 105;
-				int gap = 10;
-				int startX = 20;
-				int startY = 20;
-
-				Category[] cats = Category.values();
-				for (int i = 0; i < cats.length; i++) {
-					Category cat = cats[i];
-					int col = i % cols;
-					int row = i / cols;
-					int px = startX + col * (panelW + gap);
-					int py = row == 0 ? startY : startY + 195;
-
-					int my = py + 15;
-					for (Module m : MODULES) {
-						if (m.category == cat) {
-							if (mouseX >= px && mouseX <= px + panelW && mouseY >= my && mouseY <= my + 13) {
-								m.toggle();
-								return true;
-							}
-							my += 13;
-						}
-					}
-				}
-			}
-			return super.mouseClicked(mouseX, mouseY, button);
-		}
-	}
-}
