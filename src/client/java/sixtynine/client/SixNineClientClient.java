@@ -80,14 +80,12 @@ public class SixNineClientClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		// 1. Finding (UI / Visual toggles)
 		add(Category.FINDING,
 				"Sus Chunk Finder", "Chunk Finder V2", "Chunk Finder ESP",
 				"Hole ESP", "Item ESP", "Light Debug", "Block Entity Debug",
 				"Storage ESP", "Cave Analyzer", "Prime Chunk Finder", "Light Finder"
 		);
 
-		// 2. Visuals (Cu functii legale active pentru Fullbright, Custom FOV si Zoom)
 		add(Category.VISUALS, "Motion Blur", "Hit Particles");
 		MODULES.add(new Module("Fullbright", Category.VISUALS, false) {
 			@Override
@@ -107,25 +105,21 @@ public class SixNineClientClient implements ClientModInitializer {
 		MODULES.add(new Module("Zoom", Category.VISUALS, true));
 		add(Category.VISUALS, "Name Tags", "Weather Notifier", "Hit Box", "Custom Accessories");
 
-		// 3. Combat (UI toggles)
 		add(Category.COMBAT,
 				"Auto Crystal", "Auto Totem", "Anchor Macro", "Crystal Macro",
 				"Auto Clicker", "KillAura", "Elytra Swap", "Aim Assist", "Hover Totem"
 		);
 
-		// 4. Movement (UI toggles)
 		add(Category.MOVEMENT,
 				"Auto Walk", "Free Look", "Freecam", "Fast Use", "Swing Speed", "Player Utility"
 		);
 
-		// 5. Utility (UI toggles)
 		add(Category.UTILITY,
 				"Fake Stats", "Fake Roles", "Fake Pay", "Name Protect", "Skin Protect",
 				"Coord Snapper", "Spawner Protect", "Spawner Notifier", "Auto TPA",
 				"Chat Macro", "Gamble Rigger", "Spotify Player"
 		);
 
-		// 6. HUD (Functionale)
 		MODULES.add(new Module("HUD Manager", Category.HUD, true));
 		MODULES.add(new Module("Array List", Category.HUD, true));
 		MODULES.add(new Module("Armor HUD", Category.HUD, true));
@@ -139,7 +133,6 @@ public class SixNineClientClient implements ClientModInitializer {
 		MODULES.add(new Module("Ping HUD", Category.HUD, true));
 		MODULES.add(new Module("Region Map", Category.HUD, false));
 
-		// 7. Client
 		MODULES.add(new Module("Click GUI", Category.CLIENT, false) {
 			@Override
 			public void onToggle() {
@@ -153,7 +146,6 @@ public class SixNineClientClient implements ClientModInitializer {
 		MODULES.add(new Module("Block List", Category.CLIENT, false));
 		MODULES.add(new Module("Notifications", Category.CLIENT, true));
 
-		// Taste: Right Shift pentru ClickGUI, C pentru Zoom
 		menuKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
 				"key.sixtynine.clickgui", GLFW.GLFW_KEY_RIGHT_SHIFT, "category.sixtynine"
 		));
@@ -179,7 +171,6 @@ public class SixNineClientClient implements ClientModInitializer {
 			}
 		});
 
-		// Randare HUD
 		HudRenderCallback.EVENT.register((GuiGraphics g, net.minecraft.client.DeltaTracker delta) -> {
 			Minecraft mc = Minecraft.getInstance();
 			if (mc.player == null || mc.options.hideGui) return;
@@ -282,38 +273,14 @@ public class SixNineClientClient implements ClientModInitializer {
 			int startX = 20;
 			int startY = 20;
 
-			
-				Category[] cats = Category.values();
-				for (int i = 0; i < cats.length; i++) {
-					Category cat = cats[i];
-					int col = i % cols;
-					int row = i / cols;
-					int px = startX + col * (panelW + gap);
-					int py = row == 0 ? startY : startY + 195;
+			Category[] cats = Category.values();
+			for (int i = 0; i < cats.length; i++) {
+				Category cat = cats[i];
+				int col = i % cols;
+				int row = i / cols;
+				int px = startX + col * (panelW + gap);
+				int py = row == 0 ? startY : startY + 195;
 
-					int my = py + 15;
-					for (Module m : MODULES) {
-						if (m.category == cat) {
-							if (mouseX >= px && mouseX <= px + panelW && mouseY >= my && mouseY <= my + 13) {
-								m.toggle();
-								return true;
-							
-													my += 13;
-						}
-					}
-				}
-			}
-			return super.mouseClicked(mouseX, mouseY, button);
-		}
-	}
-}
-
-						
-					
-				
-		
-			
-		}
-	}
-}
+				g.fill(px, py, px + panelW, py + 15, accent);
+				g.drawCenteredString(this.font, cat.name, px + panelW / 2, py + 4, 0xFFFFFFFF);
 
