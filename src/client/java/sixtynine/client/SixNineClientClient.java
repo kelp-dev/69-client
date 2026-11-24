@@ -120,6 +120,87 @@ public class SixNineClientClient implements ClientModInitializer {
 			renderAllHud(g, mc, false);
 		});
 	}
+		public static void renderAllHud(GuiGraphics g, Minecraft mc, boolean editing) {
+		float scale = 0.65f;
+		g.pose().pushMatrix();
+		g.pose().scale(scale, scale);
+
+		int accent = isOn("Themes") ? 0xFF00E5FF : 0xFF9B59B6;
+		int screenW = (int) (mc.getWindow().getGuiScaledWidth() / scale);
+		int screenH = (int) (mc.getWindow().getGuiScaledHeight() / scale);
+
+		int ix = (int) (HUD_POS[0][0] / scale);
+		int iy = (int) (HUD_POS[0][1] / scale);
+		int startIy = iy;
+		if (isOn("Watermark")) {
+			g.fill(ix - 2, iy - 2, ix + 86, iy + 9, 0x90000000);
+			g.drawString(mc.font, "69 CLIENT", ix, iy, accent, true);
+			iy += 11;
+		}
+		if (isOn("FPS HUD")) { g.drawString(mc.font, "FPS: " + mc.getFps(), ix, iy, 0xFFFFFFFF, true); iy += 10; }
+		if (isOn("Ping HUD") && mc.getConnection() != null && mc.getConnection().getPlayerInfo(mc.player.getUUID()) != null) {
+			g.drawString(mc.font, "Ping: " + mc.getConnection().getPlayerInfo(mc.player.getUUID()).getLatency() + "ms", ix, iy, 0xFF55FF55, true);
+			iy += 10;
+		}
+		if (isOn("Info")) {
+			g.drawString(mc.font, String.format("XYZ: %d %d %d", (int) mc.player.getX(), (int) mc.player.getY(), (int) mc.player.getZ()), ix, iy, 0xFFDDDDDD, true);
+			iy += 10;
+		}
+		if (editing) g.renderOutline(ix - 3, startIy - 3, 92, Math.max(14, iy - startIy + 4), accent);
+
+		if (isOn("Keystrokes")) {
+			int kx = (int) (HUD_POS[1][0] / scale) + 18;
+			int ky = (int) (HUD_POS[1][1] / scale);
+			drawKey(g, mc, "W", kx, ky, mc.options.keyUp.isDown(), accent);
+			drawKey(g, mc, "A", kx - 18, ky + 18, mc.options.keyLeft.isDown(), accent);
+			drawKey(g, mc, "S", kx, ky + 18, mc.options.keyDown.isDown(), accent);
+			drawKey(g, mc, "D", kx + 18, ky + 18, mc.options.keyRight.isDown(), accent);
+			if (editing) g.renderOutline(kx - 20, ky - 2, 56, 38, accent);
+		}
+
+		if (isOn("Armor HUD")) {
+			int ax = (int) (HUD_POS[2][0] / scale);
+			int ay = (int) (HUD_POS[2][1] / scale);
+			int startAx = ax;
+			for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+				ItemStack stack = mc.player.getItemBySlot(slot);
+				if (!stack.isEmpty()) { g.renderItem(stack, ax, ay); g.renderItemDecorations(mc.font, stack, ax, ay); ax += 17; }
+			}
+			if (editing) g.renderOutline(startAx - 2, ay - 2, 70, 20, accent);
+		}
+
+		if (isOn("Potions")) {
+			int py = screenH / 2;
+			for (MobEffectInstance eff : mc.player.getActiveEffects()) {
+				g.drawString(mc.font, eff.getEffect().value().getDisplayName().getString() + " " + (eff.getDuration() / 20) + "s", 6, py, accent, true);
+				py += 10;
+			}
+		}
+
+		if (isOn("Array List")) {
+			int rx = (int) (HUD_POS[3][0] / scale);
+			int ay = (int) (HUD_POS[3][1] / scale);
+			int startAy = ay;
+			for (Module m : MODULES) {
+				if (m.enabled) {
+					int w = mc.font.width(m.name);
+					g.fill(rx - w - 6, ay - 1, rx, ay + 9, 0x80000000);
+					g.fill(rx, ay - 1, rx + 2, ay + 9, accent);
+					g.drawString(mc.font, m.name, rx - w - 3, ay, 0xFFFFFFFF, true);
+					ay += 10;
+				}
+			}
+			if (editing) g.renderOutline(rx - 80, startAy - 2, 84, Math.max(14, ay - startAy + 4), accent);
+		}
+
+		if (isOn("Notifications") && System.currentTimeMillis() - notifTime < 2000 && !lastNotif.isEmpty()) {
+			int nw = mc.font.width(lastNotif) + 10;
+			g.fill(screenW - nw - 6, screenH - 24, screenW - 6, screenH - 10, 0xCC111111);
+			g.drawString(mc.font, lastNotif, screenW - nw - 1, screenH - 21, 0xFFFFFFFF, true);
+		}
+		g.pose().popMatrix();
+	}
+
 		private static void drawKey(GuiGraphics g, Minecraft mc, String label, int x, int y, boolean pressed, int accent) {
 		g.fill(x, y, x + 16, y + 16, pressed ? (accent & 0x00FFFFFF) | 0xAA000000 : 0x80000000);
 		g.drawCenteredString(mc.font, label, x + 8, y + 4, 0xFFFFFFFF);
