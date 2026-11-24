@@ -282,4 +282,29 @@ public class SixNineClientClient implements ClientModInitializer {
 			int startX = 20;
 			int startY = 20;
 
-			Category[] cats = Category.values();
+			
+				Category[] cats = Category.values();
+				for (int i = 0; i < cats.length; i++) {
+					Category cat = cats[i];
+					int col = i % cols;
+					int row = i / cols;
+					int px = startX + col * (panelW + gap);
+					int py = row == 0 ? startY : startY + 195;
+
+					int my = py + 15;
+					for (Module m : MODULES) {
+						if (m.category == cat) {
+							if (mouseX >= px && mouseX <= px + panelW && mouseY >= my && mouseY <= my + 13) {
+								m.toggle();
+								return true;
+							}
+							my += 13;
+						}
+					}
+				}
+			}
+			return super.mouseClicked(mouseX, mouseY, button);
+		}
+	}
+}
+
