@@ -297,13 +297,22 @@ public class SixNineClientClient implements ClientModInitializer {
 							if (mouseX >= px && mouseX <= px + panelW && mouseY >= my && mouseY <= my + 13) {
 								m.toggle();
 								return true;
-							}
-							my += 13;
+							
+													my += 13;
 						}
 					}
 				}
 			}
 			return super.mouseClicked(mouseX, mouseY, button);
+		}
+	}
+}
+
+						
+					
+				
+		
+			
 		}
 	}
 }
